@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>公園調査オールインワンツール</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <style>
+    /* Leaflet CSS fallback */
+    .leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute;left:0;top:0}.leaflet-container{overflow:hidden;position:relative;background:#ddd}.leaflet-control{position:relative;z-index:800;pointer-events:auto}.leaflet-top,.leaflet-bottom{position:absolute;z-index:1000;pointer-events:none}.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}.leaflet-popup-pane{z-index:700}.leaflet-marker-pane{z-index:600}.leaflet-overlay-pane{z-index:400}.leaflet-tile-pane{z-index:200}
+
+    :root{--bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--line:#e5e7eb;--main:#2563eb;--dark:#1d4ed8;--green:#16a34a;--red:#ef4444;--orange:#f59e0b;--gray:#64748b;--radius:14px}
+    *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}header{padding:24px 20px 16px;background:linear-gradient(135deg,#2563eb,#0f766e);color:#fff}header h1{margin:0 0 6px;font-size:24px}header p{margin:0;font-size:14px;opacity:.9}.tabs{display:flex;gap:8px;padding:14px 20px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1000}.tab-btn{background:#e5e7eb;color:#111827}.tab-btn.active{background:var(--main);color:#fff}.tab{display:none}.tab.active{display:block}main{max-width:1320px;margin:20px auto 50px;padding:0 18px}.grid{display:grid;grid-template-columns:430px 1fr;gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 24px rgba(15,23,42,.06);overflow:hidden}.card h2{margin:0;padding:15px 18px;font-size:18px;background:#f9fafb;border-bottom:1px solid var(--line)}.card-body{padding:18px}.field{margin-bottom:13px}.field.full{grid-column:1/-1}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:9px 10px;font-size:14px;color:var(--text);background:#fff}textarea{min-height:70px;resize:vertical}input:focus,select:focus,textarea:focus{outline:2px solid rgba(37,99,235,.25);border-color:var(--main)}button{border:0;border-radius:10px;padding:9px 13px;color:#fff;background:var(--main);font-size:14px;font-weight:700;cursor:pointer}button:hover{background:var(--dark)}button.secondary{background:var(--gray)}button.secondary:hover{background:#475569}button.danger{background:#dc2626}button.danger:hover{background:#b91c1c}button.green{background:var(--green)}button.green:hover{background:#15803d}button.orange{background:var(--orange)}button.orange:hover{background:#d97706}.button-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}.hint{color:var(--muted);font-size:12px;margin-top:4px}.notice{padding:10px 12px;border-radius:10px;background:#fefce8;border:1px solid #fde68a;color:#854d0e;font-size:13px;margin-bottom:14px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}.stat{padding:10px;border-radius:12px;background:#f8fafc;border:1px solid var(--line)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat strong{font-size:22px;line-height:1.2}.rule-section{margin-top:12px;border-top:1px solid var(--line);padding-top:14px}.rule-row{display:grid;grid-template-columns:1fr 135px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9}.rule-title{font-size:14px;font-weight:700}.rule-desc{font-size:12px;color:var(--muted)}.score-box{margin:16px 0 4px;padding:12px 14px;border-radius:12px;background:#eff6ff;border:1px solid #bfdbfe;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.score-box strong{font-size:21px}.toolbar,.map-toolbar{padding:14px 18px;display:flex;gap:8px;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);background:#fff;flex-wrap:wrap}.toolbar-left,.toolbar-right,.map-toolbar-left,.map-toolbar-right{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.small-text{font-size:13px;color:var(--muted)}.table-wrap{overflow:auto;max-height:520px}table{width:100%;border-collapse:collapse;font-size:13px;min-width:1200px}th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;white-space:nowrap}th{background:#f3f4f6;position:sticky;top:0;z-index:1}.mini-btn{padding:5px 8px;font-size:12px;border-radius:8px;margin:2px}.empty{padding:32px 14px;text-align:center;color:var(--muted)}.csv-box,.csv-area{border-top:1px solid var(--line);padding-top:14px}.csv-box textarea,.csv-area textarea{height:150px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;white-space:pre}.map-layout{display:grid;grid-template-columns:390px 1fr;gap:18px}#map{height:520px;width:100%;min-height:520px;border-bottom:1px solid var(--line);position:relative;overflow:hidden;background:#e5e7eb}.search-input{width:240px}.legend{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:13px}.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px;vertical-align:middle}.dot.done{background:var(--green)}.dot.undone{background:var(--red)}.lists{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px}.list-box{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}.list-title{padding:10px 12px;font-weight:800;background:#f9fafb;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.list-title.done{color:var(--green)}.list-title.undone{color:var(--red)}.park-list{max-height:260px;overflow:auto}.park-item{padding:11px 12px;border-bottom:1px solid #f1f5f9;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.park-name{font-weight:800;font-size:14px}.park-meta{font-size:12px;color:var(--muted);margin-top:2px}.popup-title{font-weight:800;font-size:14px;margin-bottom:4px}.popup-status{font-size:13px;margin-bottom:8px}.leaflet-popup-content button{margin-top:4px;padding:6px 9px;font-size:12px}@media(max-width:1000px){.grid,.map-layout{grid-template-columns:1fr}.tabs{overflow:auto}#map{height:420px;min-height:420px}}@media(max-width:720px){.form-grid,.two-col,.lists,.stats{grid-template-columns:1fr}.search-input{width:100%}main{padding:0 10px}.card-body{padding:14px}header h1{font-size:21px}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>公園調査オールインワンツール</h1>
+    <p>公園データCSV作成と現地調査トラッカーを1つに統合した、GitHub Pages公開用のHTMLアプリです。</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="showTab('csvTool', this)">公園データCSV作成</button>
+    <button class="tab-btn" onclick="showTab('surveyTool', this)">現地調査トラッカー</button>
+  </nav>
+
+  <main>
+    <section id="csvTool" class="tab active">
+      <div class="grid">
+        <section class="card">
+          <h2>1. 公園情報の入力</h2>
+          <div class="card-body">
+            <div class="notice">規制レベルは「0＝規制なし」〜「4＝強い規制」として記録します。</div>
+            <div class="form-grid">
+              <div class="field"><label for="park_id">公園ID</label><input id="park_id" type="text" placeholder="例：P001" /></div>
+              <div class="field"><label for="park_name">公園名</label><input id="park_name" type="text" placeholder="例：湘南台公園" /></div>
+              <div class="field"><label for="address">所在地</label><input id="address" type="text" placeholder="例：藤沢市湘南台七丁目" /></div>
+              <div class="field"><label for="area_m2">面積㎡</label><input id="area_m2" type="number" step="0.01" placeholder="例：22300" /></div>
+              <div class="field"><label for="latCsv">緯度</label><input id="latCsv" type="number" step="0.0000001" placeholder="例：35.3961" /></div>
+              <div class="field"><label for="lngCsv">経度</label><input id="lngCsv" type="number" step="0.0000001" placeholder="例：139.4661" /></div>
+              <div class="field"><label for="park_type">公園種別</label><input id="park_type" type="text" placeholder="例：近隣公園" /></div>
+              <div class="field"><label for="manager">管理者</label><input id="manager" type="text" placeholder="例：藤沢市" /></div>
+              <div class="field full"><label for="source_url">情報源URL・資料名</label><input id="source_url" type="text" placeholder="例：藤沢市公園一覧、現地掲示板等" /></div>
+              <div class="field full"><label for="notes">メモ</label><textarea id="notes" placeholder="現地看板の記載、調査日、判断に迷った点など"></textarea></div>
+            </div>
+            <div class="rule-section" id="ruleFields"></div>
+            <div class="score-box"><span>規制スコア合計 / 平均</span><strong><span id="totalScore">0</span> / <span id="avgScore">0.00</span></strong></div>
+            <div class="button-row">
+              <button onclick="addOrUpdateParkCsv()" id="saveCsvBtn">公園を追加</button>
+              <button class="secondary" onclick="clearCsvForm()">入力欄をクリア</button>
+              <button class="orange" onclick="fillCsvSample()">サンプル入力</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>2. CSV出力</h2>
+          <div class="toolbar">
+            <div class="toolbar-left"><span class="small-text">登録件数：<strong id="csvCount">0</strong>件</span></div>
+            <div class="toolbar-right">
+              <button class="green" onclick="downloadParkDataCSV()">CSVをダウンロード</button>
+              <button onclick="copyParkDataCSV()">CSVをコピー</button>
+              <button class="orange" onclick="sendCsvDataToSurvey()">現地調査トラッカーへ送る</button>
+              <button class="danger" onclick="deleteAllParkData()">全削除</button>
+            </div>
+          </div>
+          <div id="csvTableArea" class="table-wrap"><div class="empty">まだ公園データがありません。</div></div>
+          <div class="card-body csv-box">
+            <label for="parkCsvPreview">CSVプレビュー</label>
+            <textarea id="parkCsvPreview" readonly></textarea>
+            <div class="hint">「現地調査トラッカーへ送る」を押すと、公園名・緯度・経度・メモが地図側にも登録されます。</div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="surveyTool" class="tab">
+      <div class="map-layout">
+        <section class="card">
+          <h2>1. 公園を登録</h2>
+          <div class="card-body">
+            <div class="stats">
+              <div class="stat"><span>合計</span><strong id="totalCount">0</strong></div>
+              <div class="stat"><span>調査済み</span><strong id="doneCount">0</strong></div>
+              <div class="stat"><span>調査未達</span><strong id="undoneCount">0</strong></div>
+            </div>
+            <div class="field"><label for="surveyParkName">公園名</label><input id="surveyParkName" type="text" placeholder="例：湘南台公園" /></div>
+            <div class="two-col">
+              <div class="field"><label for="latSurvey">緯度</label><input id="latSurvey" type="number" step="0.0000001" placeholder="例：35.3961" /></div>
+              <div class="field"><label for="lngSurvey">経度</label><input id="lngSurvey" type="number" step="0.0000001" placeholder="例：139.4661" /></div>
+            </div>
+            <div class="field"><label for="status">調査状況</label><select id="status"><option value="未達">調査未達</option><option value="済み">調査済み</option></select></div>
+            <div class="field"><label for="memo">メモ</label><textarea id="memo" placeholder="例：入口の看板を確認予定、写真撮影済みなど"></textarea></div>
+            <div class="button-row">
+              <button id="saveSurveyBtn" onclick="addOrUpdateSurveyPark()">公園を追加</button>
+              <button class="secondary" onclick="clearSurveyForm()">入力欄をクリア</button>
+              <button class="orange" onclick="fillSurveySample()">サンプル入力</button>
+            </div>
+            <p class="hint">登録データはブラウザ内に自動保存されます。</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>2. 地図・調査状況一覧</h2>
+          <div class="map-toolbar">
+            <div class="map-toolbar-left">
+              <input id="searchInput" class="search-input" type="text" placeholder="公園名で検索" oninput="renderSurvey()" />
+              <select id="filterStatus" onchange="renderSurvey()"><option value="all">すべて表示</option><option value="未達">調査未達のみ</option><option value="済み">調査済みのみ</option></select>
+            </div>
+            <div class="map-toolbar-right"><div class="legend"><span><span class="dot undone"></span>調査未達</span><span><span class="dot done"></span>調査済み</span></div></div>
+          </div>
+          <div id="map"></div>
+          <div class="lists">
+            <div class="list-box"><div class="list-title undone"><span>調査未達の公園</span><span id="undoneListCount">0</span></div><div id="undoneList" class="park-list"></div></div>
+            <div class="list-box"><div class="list-title done"><span>調査済みの公園</span><span id="doneListCount">0</span></div><div id="doneList" class="park-list"></div></div>
+          </div>
+          <div class="csv-area card-body">
+            <div class="button-row" style="margin-top:0;margin-bottom:12px">
+              <button class="green" onclick="downloadSurveyCSV()">CSVをダウンロード</button>
+              <button onclick="copySurveyCSV()">CSVをコピー</button>
+              <button class="orange" onclick="document.getElementById('csvImport').click()">CSVを読み込む</button>
+              <input id="csvImport" type="file" accept=".csv,text/csv" style="display:none" onchange="importSurveyCSV(event)" />
+              <button class="secondary" onclick="fitAllMarkers()">全公園が見える位置へ</button>
+              <button class="danger" onclick="deleteAllSurveyParks()">全削除</button>
+            </div>
+            <label for="surveyCsvPreview">CSVプレビュー</label>
+            <textarea id="surveyCsvPreview" readonly></textarea>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const RULE_ITEMS=[{key:"ball_play",label:"ボール遊び",desc:"禁止・制限・時間指定など"},{key:"noise_music",label:"音・楽器・大声",desc:"騒音、音楽、スピーカー利用など"},{key:"bicycle",label:"自転車・乗り物",desc:"自転車、スケートボード、キックボードなど"},{key:"pets",label:"ペット・犬",desc:"犬の散歩、リード、立入禁止など"},{key:"smoking_fire",label:"喫煙・火気",desc:"喫煙、花火、BBQ、火気使用など"},{key:"commercial_use",label:"商業利用・占用",desc:"販売、撮影、イベント、占用許可など"},{key:"time_use",label:"利用時間",desc:"夜間閉鎖、利用時間制限など"},{key:"entry_area",label:"立入・利用区域",desc:"芝生立入禁止、遊具対象年齢など"}];
+    const LEVEL_OPTIONS=[{value:0,text:"0：規制なし"},{value:1,text:"1：弱い注意"},{value:2,text:"2：一部制限"},{value:3,text:"3：原則禁止"},{value:4,text:"4：強い禁止"}];
+    const BASIC_COLUMNS=["park_id","park_name","address","lat","lng","area_m2","park_type","manager","source_url","notes"];
+    const DERIVED_COLUMNS=["rule_total_score","rule_average_score","created_at"];
+    let parkData=JSON.parse(localStorage.getItem("allInOneParkData")||"[]");
+    let surveyParks=JSON.parse(localStorage.getItem("allInOneSurveyParks")||"[]");
+    let editingCsvIndex=null,editingSurveyIndex=null,markers=[];
+
+    function showTab(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active');if(id==='surveyTool')setTimeout(()=>map.invalidateSize(true),150)}
+
+    function initRuleFields(){const c=document.getElementById('ruleFields');c.innerHTML='<h3 style="font-size:16px;margin:0 0 8px">規制ルールの5段階評価</h3>';RULE_ITEMS.forEach(item=>{const row=document.createElement('div');row.className='rule-row';row.innerHTML=`<div><div class="rule-title">${escapeHTML(item.label)}</div><div class="rule-desc">${escapeHTML(item.desc)}</div></div><select id="rule_${item.key}" onchange="updateScore()">${LEVEL_OPTIONS.map(o=>`<option value="${o.value}">${o.text}</option>`).join('')}</select>`;c.appendChild(row)})}
+    function getCsvFormData(){const d={};d.park_id=val('park_id');d.park_name=val('park_name');d.address=val('address');d.lat=val('latCsv');d.lng=val('lngCsv');d.area_m2=val('area_m2');d.park_type=val('park_type');d.manager=val('manager');d.source_url=val('source_url');d.notes=val('notes');let total=0;RULE_ITEMS.forEach(item=>{const v=Number(document.getElementById(`rule_${item.key}`).value);d[item.key]=v;total+=v});d.rule_total_score=total;d.rule_average_score=(total/RULE_ITEMS.length).toFixed(2);d.created_at=new Date().toISOString().slice(0,10);return d}
+    function setCsvFormData(d){setVal('park_id',d.park_id);setVal('park_name',d.park_name);setVal('address',d.address);setVal('latCsv',d.lat);setVal('lngCsv',d.lng);setVal('area_m2',d.area_m2);setVal('park_type',d.park_type);setVal('manager',d.manager);setVal('source_url',d.source_url);setVal('notes',d.notes);RULE_ITEMS.forEach(item=>setVal(`rule_${item.key}`,d[item.key]??0));updateScore()}
+    function updateScore(){let t=0;RULE_ITEMS.forEach(item=>t+=Number(document.getElementById(`rule_${item.key}`).value));document.getElementById('totalScore').textContent=t;document.getElementById('avgScore').textContent=(t/RULE_ITEMS.length).toFixed(2)}
+    function addOrUpdateParkCsv(){const d=getCsvFormData();if(!d.park_name)return alert('公園名を入力してください。');if(d.lat&&(Number(d.lat)<-90||Number(d.lat)>90))return alert('緯度を確認してください。');if(d.lng&&(Number(d.lng)<-180||Number(d.lng)>180))return alert('経度を確認してください。');if(editingCsvIndex===null)parkData.push(d);else{parkData[editingCsvIndex]=d;editingCsvIndex=null;document.getElementById('saveCsvBtn').textContent='公園を追加'}saveParkData();clearCsvForm();renderParkData()}
+    function editParkData(i){editingCsvIndex=i;setCsvFormData(parkData[i]);document.getElementById('saveCsvBtn').textContent='編集内容を保存';window.scrollTo({top:0,behavior:'smooth'})}
+    function duplicateParkData(i){const c={...parkData[i]};c.park_id=c.park_id?`${c.park_id}_copy`:'';c.park_name=c.park_name?`${c.park_name} コピー`:'';parkData.push(c);saveParkData();renderParkData()}
+    function deleteParkData(i){if(!confirm('この公園データを削除しますか？'))return;parkData.splice(i,1);saveParkData();renderParkData()}
+    function deleteAllParkData(){if(!parkData.length)return;if(!confirm('公園データをすべて削除しますか？'))return;parkData=[];saveParkData();renderParkData()}
+    function clearCsvForm(){['park_id','park_name','address','latCsv','lngCsv','area_m2','park_type','manager','source_url','notes'].forEach(id=>setVal(id,''));RULE_ITEMS.forEach(item=>setVal(`rule_${item.key}`,0));editingCsvIndex=null;document.getElementById('saveCsvBtn').textContent='公園を追加';updateScore()}
+    function fillCsvSample(){setCsvFormData({park_id:'P001',park_name:'湘南台公園',address:'藤沢市湘南台七丁目',lat:'35.3961',lng:'139.4661',area_m2:'22300',park_type:'近隣公園',manager:'藤沢市',source_url:'現地掲示板・藤沢市公園情報',notes:'サンプルデータ',ball_play:2,noise_music:1,bicycle:2,pets:1,smoking_fire:3,commercial_use:3,time_use:1,entry_area:2})}
+    function getParkDataColumns(){return[...BASIC_COLUMNS,...RULE_ITEMS.map(i=>i.key),...DERIVED_COLUMNS]}
+    function getParkDataCSV(){const cols=getParkDataColumns();return[cols.join(','),...parkData.map(r=>cols.map(c=>csvEscape(r[c]??'')).join(','))].join('\n')}
+    function renderParkData(){document.getElementById('csvCount').textContent=parkData.length;document.getElementById('parkCsvPreview').value=getParkDataCSV();const area=document.getElementById('csvTableArea');if(!parkData.length){area.innerHTML='<div class="empty">まだ公園データがありません。</div>';return}const cols=getParkDataColumns(),map=labelMap();area.innerHTML=`<table><thead><tr>${cols.map(c=>`<th>${escapeHTML(map[c]||c)}</th>`).join('')}<th>操作</th></tr></thead><tbody>${parkData.map((r,i)=>`<tr>${cols.map(c=>`<td>${escapeHTML(r[c]??'')}</td>`).join('')}<td><button class="mini-btn" onclick="editParkData(${i})">編集</button><button class="mini-btn secondary" onclick="duplicateParkData(${i})">複製</button><button class="mini-btn danger" onclick="deleteParkData(${i})">削除</button></td></tr>`).join('')}</tbody></table>`}
+    function labelMap(){const m={park_id:'公園ID',park_name:'公園名',address:'所在地',lat:'緯度',lng:'経度',area_m2:'面積㎡',park_type:'公園種別',manager:'管理者',source_url:'情報源',notes:'メモ',rule_total_score:'規制合計',rule_average_score:'規制平均',created_at:'作成日'};RULE_ITEMS.forEach(i=>m[i.key]=i.label);return m}
+    function saveParkData(){localStorage.setItem('allInOneParkData',JSON.stringify(parkData))}
+    function downloadParkDataCSV(){downloadText(getParkDataCSV(),`park_data_${today()}.csv`)}
+    async function copyParkDataCSV(){await copyText(getParkDataCSV())}
+    function sendCsvDataToSurvey(){const targets=parkData.filter(p=>p.park_name&&p.lat&&p.lng&&!surveyParks.some(s=>s.park_name===p.park_name&&String(s.lat)===String(p.lat)&&String(s.lng)===String(p.lng)));if(!targets.length)return alert('送れる新規データがありません。');targets.forEach(p=>surveyParks.push({park_name:p.park_name,lat:Number(p.lat),lng:Number(p.lng),status:'未達',memo:p.notes||'',updated_at:today()}));saveSurvey();renderSurvey();alert(`${targets.length}件を現地調査トラッカーへ追加しました。`)}
+
+    const DEFAULT_CENTER=[35.3392,139.4900];
+    const map=L.map('map').setView(DEFAULT_CENTER,13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+    function addOrUpdateSurveyPark(){const name=val('surveyParkName'),lat=Number(val('latSurvey')),lng=Number(val('lngSurvey')),status=val('status'),memo=val('memo');if(!name)return alert('公園名を入力してください。');if(!Number.isFinite(lat)||lat<-90||lat>90)return alert('緯度を正しく入力してください。');if(!Number.isFinite(lng)||lng<-180||lng>180)return alert('経度を正しく入力してください。');const d={park_name:name,lat,lng,status,memo,updated_at:today()};if(editingSurveyIndex===null)surveyParks.push(d);else{surveyParks[editingSurveyIndex]=d;editingSurveyIndex=null;document.getElementById('saveSurveyBtn').textContent='公園を追加'}saveSurvey();clearSurveyForm();renderSurvey();map.setView([lat,lng],16)}
+    function clearSurveyForm(){setVal('surveyParkName','');setVal('latSurvey','');setVal('lngSurvey','');setVal('status','未達');setVal('memo','');editingSurveyIndex=null;document.getElementById('saveSurveyBtn').textContent='公園を追加'}
+    function fillSurveySample(){setVal('surveyParkName','湘南台公園');setVal('latSurvey','35.3961');setVal('lngSurvey','139.4661');setVal('status','未達');setVal('memo','現地で公園入口と遊具周辺のルール看板を確認する。')}
+    function editSurveyPark(i){const p=surveyParks[i];editingSurveyIndex=i;setVal('surveyParkName',p.park_name);setVal('latSurvey',p.lat);setVal('lngSurvey',p.lng);setVal('status',p.status);setVal('memo',p.memo||'');document.getElementById('saveSurveyBtn').textContent='編集内容を保存';showTab('surveyTool',document.querySelectorAll('.tab-btn')[1]);map.setView([p.lat,p.lng],16);window.scrollTo({top:0,behavior:'smooth'})}
+    function deleteSurveyPark(i){if(!confirm('この公園を削除しますか？'))return;surveyParks.splice(i,1);saveSurvey();renderSurvey()}
+    function toggleStatus(i){surveyParks[i].status=surveyParks[i].status==='済み'?'未達':'済み';surveyParks[i].updated_at=today();saveSurvey();renderSurvey()}
+    function focusPark(i){const p=surveyParks[i];map.setView([p.lat,p.lng],17);const m=markers.find(x=>x.options.parkIndex===i);if(m)m.openPopup()}
+    function deleteAllSurveyParks(){if(!surveyParks.length)return;if(!confirm('登録済みの公園データをすべて削除しますか？'))return;surveyParks=[];saveSurvey();renderSurvey()}
+    function getFilteredIndexes(){const q=val('searchInput').toLowerCase(),f=val('filterStatus');return surveyParks.map((p,i)=>({p,i})).filter(({p})=>(!q||p.park_name.toLowerCase().includes(q))&&(f==='all'||p.status===f)).map(x=>x.i)}
+    function renderSurvey(){const done=surveyParks.filter(p=>p.status==='済み'),undone=surveyParks.filter(p=>p.status==='未達');setText('totalCount',surveyParks.length);setText('doneCount',done.length);setText('undoneCount',undone.length);setText('doneListCount',done.length);setText('undoneListCount',undone.length);document.getElementById('surveyCsvPreview').value=getSurveyCSV();renderMarkers();renderLists()}
+    function renderMarkers(){markers.forEach(m=>map.removeLayer(m));markers=[];getFilteredIndexes().forEach(i=>{const p=surveyParks[i],color=p.status==='済み'?'#16a34a':'#ef4444';const m=L.circleMarker([p.lat,p.lng],{parkIndex:i,radius:8,color,fillColor:color,fillOpacity:.85,weight:2}).addTo(map);m.bindPopup(`<div class="popup-title">${escapeHTML(p.park_name)}</div><div class="popup-status">状況：<strong>${p.status==='済み'?'調査済み':'調査未達'}</strong></div><div style="font-size:12px;color:#6b7280">${escapeHTML(p.memo||'メモなし')}</div><button onclick="toggleStatus(${i})">${p.status==='済み'?'未達に戻す':'調査済みにする'}</button><button class="secondary" onclick="editSurveyPark(${i})">編集</button>`);markers.push(m)})}
+    function renderLists(){const visible=getFilteredIndexes(),undone=visible.filter(i=>surveyParks[i].status==='未達'),done=visible.filter(i=>surveyParks[i].status==='済み');document.getElementById('undoneList').innerHTML=undone.length?undone.map(parkItemHTML).join(''):'<div class="empty">該当する未達公園はありません。</div>';document.getElementById('doneList').innerHTML=done.length?done.map(parkItemHTML).join(''):'<div class="empty">該当する調査済み公園はありません。</div>'}
+    function parkItemHTML(i){const p=surveyParks[i],next=p.status==='済み'?'未達へ':'済みにする';return`<div class="park-item"><div><div class="park-name">${escapeHTML(p.park_name)}</div><div class="park-meta">${p.lat}, ${p.lng} / 更新：${escapeHTML(p.updated_at||'')}</div>${p.memo?`<div class="park-meta">${escapeHTML(p.memo)}</div>`:''}</div><div><button class="mini-btn" onclick="focusPark(${i})">地図</button><button class="mini-btn green" onclick="toggleStatus(${i})">${next}</button><button class="mini-btn secondary" onclick="editSurveyPark(${i})">編集</button><button class="mini-btn danger" onclick="deleteSurveyPark(${i})">削除</button></div></div>`}
+    function fitAllMarkers(){if(!surveyParks.length){map.setView(DEFAULT_CENTER,13);return}map.fitBounds(surveyParks.map(p=>[p.lat,p.lng]),{padding:[40,40]})}
+    function getSurveyCSV(){const cols=['park_name','lat','lng','status','memo','updated_at'];return[cols.join(','),...surveyParks.map(p=>cols.map(c=>csvEscape(p[c]??'')).join(','))].join('\n')}
+    function downloadSurveyCSV(){downloadText(getSurveyCSV(),`park_field_survey_${today()}.csv`)}
+    async function copySurveyCSV(){await copyText(getSurveyCSV())}
+    function saveSurvey(){localStorage.setItem('allInOneSurveyParks',JSON.stringify(surveyParks))}
+    function importSurveyCSV(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const rows=parseCSV(String(ev.target.result||'').replace(/^\uFEFF/,''));if(rows.length<2)return alert('CSVにデータ行がありません。');const headers=rows[0].map(h=>h.trim()),imported=[];for(let i=1;i<rows.length;i++){const row=rows[i];if(!row.length||row.every(v=>!String(v).trim()))continue;const obj={};headers.forEach((h,idx)=>obj[h]=row[idx]??'');const n=normalizeImportedPark(obj);if(n)imported.push(n)}if(!imported.length)return alert('読み込める公園データが見つかりませんでした。');const add=confirm(`${imported.length}件を読み込みます。\nOK：現在のデータに追加\nキャンセル：現在のデータを置き換え`);surveyParks=add?[...surveyParks,...imported]:imported;saveSurvey();renderSurvey();fitAllMarkers();alert(`${imported.length}件を読み込みました。`)}catch(err){console.error(err);alert('CSV読み込み中にエラーが発生しました。')}finally{e.target.value=''}};reader.readAsText(file,'UTF-8')}
+    function normalizeImportedPark(obj){const name=pickValue(obj,['park_name','公園名','name','名称']),lat=Number(pickValue(obj,['lat','latitude','緯度'])),lng=Number(pickValue(obj,['lng','lon','longitude','経度'])),statusRaw=String(pickValue(obj,['status','調査状況','survey_status'])).trim().toLowerCase(),memo=pickValue(obj,['memo','notes','メモ','備考']),updated=pickValue(obj,['updated_at','created_at','更新日','作成日']);if(!name||!Number.isFinite(lat)||!Number.isFinite(lng))return null;let status='未達';if(['済み','調査済み','done','completed','1','true'].includes(statusRaw))status='済み';return{park_name:String(name).trim(),lat,lng,status,memo:String(memo||'').trim(),updated_at:updated||today()}}
+
+    function val(id){return document.getElementById(id).value.trim()}function setVal(id,v){document.getElementById(id).value=v??''}function setText(id,v){document.getElementById(id).textContent=v}function today(){return new Date().toISOString().slice(0,10)}
+    function csvEscape(v){const t=String(v);return /[",\n\r]/.test(t)?`"${t.replace(/"/g,'""')}"`:t}
+    function downloadText(text,name){if((!parkData.length&&name.startsWith('park_data'))||(!surveyParks.length&&name.startsWith('park_field'))){}const blob=new Blob(['\uFEFF'+text],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url)}
+    async function copyText(text){await navigator.clipboard.writeText(text);alert('コピーしました。')}
+    function escapeHTML(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+    function pickValue(obj,keys){for(const k of keys){if(obj[k]!==undefined&&obj[k]!==null&&String(obj[k]).trim()!=='')return obj[k]}return''}
+    function parseCSV(text){const rows=[];let row=[],field='',q=false;for(let i=0;i<text.length;i++){const ch=text[i],n=text[i+1];if(ch==='"'){if(q&&n==='"'){field+='"';i++}else q=!q}else if(ch===','&&!q){row.push(field);field=''}else if((ch==='\n'||ch==='\r')&&!q){if(ch==='\r'&&n==='\n')i++;row.push(field);rows.push(row);row=[];field=''}else field+=ch}row.push(field);rows.push(row);return rows}
+
+    initRuleFields();updateScore();renderParkData();renderSurvey();setTimeout(()=>map.invalidateSize(true),200);setTimeout(()=>map.invalidateSize(true),700);window.addEventListener('resize',()=>map.invalidateSize(true));
+  </script>
+</body>
+</html>
